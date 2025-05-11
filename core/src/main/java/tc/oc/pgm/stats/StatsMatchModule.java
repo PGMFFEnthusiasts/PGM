@@ -291,6 +291,11 @@ public class StatsMatchModule implements MatchModule, Listener {
 
     // Gather aggregated player stats from this match
     List<AggStat<?>> stats = new ArrayList<>();
+    for (StatType.OfFormula formulaStat : formulaStats) {
+      if (formulaStat.append()) {
+        stats.add(new AggStat<>(formulaStat, 0d, new HashSet<>()));
+      }
+    }
     stats.add(new AggStat<>(StatType.Builtin.KILLS, 0, new HashSet<>()));
     stats.add(new AggStat<>(StatType.Builtin.DEATHS, 0, new HashSet<>()));
     stats.add(new AggStat<>(StatType.Builtin.ASSISTS, 0, new HashSet<>()));
@@ -298,7 +303,9 @@ public class StatsMatchModule implements MatchModule, Listener {
     stats.add(new AggStat<>(StatType.Builtin.LONGEST_BOW_SHOT, 0, new HashSet<>()));
     if (verboseStats) stats.add(new AggStat<>(StatType.Builtin.DAMAGE, 0d, new HashSet<>()));
     for (StatType.OfFormula formulaStat : formulaStats) {
-      stats.add(new AggStat<>(formulaStat, 0d, new HashSet<>()));
+      if (!formulaStat.append()) {
+        stats.add(new AggStat<>(formulaStat, 0d, new HashSet<>()));
+      }
     }
 
     allPlayerStats.forEach((uuid, s) -> {

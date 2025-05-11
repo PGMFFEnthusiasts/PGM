@@ -60,8 +60,11 @@ public sealed interface StatType<I> {
     }
   }
 
-  record OfFormula(Component name, Formula<MatchPlayer> formula, TextColor color)
-      implements StatType<MatchPlayer> {
+  record OfFormula(
+    Component name, Formula<MatchPlayer> formula,
+    boolean append,
+    TextColor color
+  ) implements StatType<MatchPlayer> {
     private static final String KEY = "match.stats.type.generic";
 
     @Override

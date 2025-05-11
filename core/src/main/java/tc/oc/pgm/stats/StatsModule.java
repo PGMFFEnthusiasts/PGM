@@ -47,10 +47,11 @@ public class StatsModule implements MapModule<StatsMatchModule> {
       ImmutableList.Builder<StatType.OfFormula> formulaStats = new ImmutableList.Builder<>();
       for (Element el : XMLUtils.flattenElements(doc.getRootElement(), "stats", "stat")) {
         Component name = parser.component(el, "name").required();
+        boolean append = parser.parseBool(el, "append").optional(false);
         TextColor color = parser.textColor(el, "color").optional(NamedTextColor.GREEN);
         Formula<MatchPlayer> formulaDef =
             parser.formula(MatchPlayer.class, el, "value").required();
-        formulaStats.add(new StatType.OfFormula(name, formulaDef, color));
+        formulaStats.add(new StatType.OfFormula(name, formulaDef, append, color));
       }
       return new StatsModule(formulaStats.build());
     }
