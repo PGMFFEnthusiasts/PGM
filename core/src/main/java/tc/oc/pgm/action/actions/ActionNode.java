@@ -8,8 +8,8 @@ import tc.oc.pgm.filters.Filterable;
 
 public class ActionNode<B extends Filterable<?>> extends AbstractAction<B> {
   private final ImmutableList<Action<? super B>> actions;
-  private final Filter filter;
-  private final Filter untrigerFilter;
+  public final Filter filter;
+  public final Filter untrigerFilter;
   private final Class<B> bound;
 
   public ActionNode(

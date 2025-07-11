@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
+import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.jdom2.Element;
@@ -44,10 +45,13 @@ import tc.oc.pgm.action.actions.VelocityAction;
 import tc.oc.pgm.action.actions.WeatherAction;
 import tc.oc.pgm.action.replacements.Replacement;
 import tc.oc.pgm.action.replacements.ReplacementParser;
+import tc.oc.pgm.api.PGM;
+import tc.oc.pgm.api.event.ActionNodeTriggerEvent;
 import tc.oc.pgm.api.feature.FeatureValidation;
 import tc.oc.pgm.api.filter.Filter;
 import tc.oc.pgm.api.filter.Filterables;
 import tc.oc.pgm.api.filter.query.PartyQuery;
+import tc.oc.pgm.api.filter.query.Query;
 import tc.oc.pgm.api.map.MapProtos;
 import tc.oc.pgm.api.map.factory.MapFactory;
 import tc.oc.pgm.api.party.Party;
@@ -119,6 +123,36 @@ public class ActionParser {
     }
 
     Action<? super B> result = property ? parseAction(el, bound) : parseDynamic(el, bound);
+    if (PGM.get().getConfiguration().getActionNodeHooks().contains(id)
+        && result instanceof ActionNode<? super B> capturedAction) {
+      result = new ActionDefinition<B>() {
+        @Override
+        public Class<B> getScope() {
+          return (Class<B>) capturedAction.getScope();
+        }
+
+        @Override
+        public void trigger(B b) {
+          Bukkit.getServer().getPluginManager().callEvent(new ActionNodeTriggerEvent(id, b));
+          capturedAction.trigger(b);
+        }
+
+        @Override
+        public void trigger(B b, Query event) {
+          if (capturedAction.filter.query(event).isAllowed()) {
+            Bukkit.getServer().getPluginManager().callEvent(new ActionNodeTriggerEvent(id, b));
+            capturedAction.trigger(b, event);
+          }
+        }
+
+        @Override
+        public void untrigger(B b) {
+          if (capturedAction.untrigerFilter.query(b).isAllowed()) {
+            capturedAction.untrigger(b);
+          }
+        }
+      };
+    }
     if (bound != null) validate(result, ActionScopeValidation.of(bound), node);
     if (result instanceof ActionDefinition) {
       if (XMLUtils.parseBoolean(Node.fromAttr(el, "expose"), false)) {

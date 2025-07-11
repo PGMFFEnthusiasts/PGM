@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -74,6 +75,9 @@ public interface Config {
 
   /** @return Should setting dev phase maps be restricted to Devs */
   boolean enforceDevPhase();
+
+  /** @return Action nodes for which we would like to expose executions on * */
+  Set<String> getActionNodeHooks();
 
   /**
    * Gets a duration to wait before starting a match.

@@ -23,11 +23,13 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -65,6 +67,7 @@ public final class PGMConfig implements Config {
   private final Path includesDirectory;
   private final boolean showUnusedXml;
   private final boolean enforceDevPhase;
+  private final Set<String> actionNodeHooks;
 
   // countdown.*
   private final Duration startTime;
@@ -173,6 +176,7 @@ public final class PGMConfig implements Config {
     this.includesDirectory = getPath(dataFolder.toPath(), config.getString("map.includes"));
     this.showUnusedXml = parseBoolean(config.getString("map.show-unused-xml", "true"));
     this.enforceDevPhase = parseBoolean(config.getString("map.enforce-dev-phase", "false"));
+    this.actionNodeHooks = new HashSet<>(config.getStringList("map.action-node-hooks"));
 
     this.startTime = parseDuration(config.getString("countdown.start", "30s"));
     this.huddleTime = parseDuration(config.getString("countdown.huddle", "0s"));
@@ -503,6 +507,11 @@ public final class PGMConfig implements Config {
   @Override
   public boolean enforceDevPhase() {
     return enforceDevPhase;
+  }
+
+  @Override
+  public Set<String> getActionNodeHooks() {
+    return actionNodeHooks;
   }
 
   @Override

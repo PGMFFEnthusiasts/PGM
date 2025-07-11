@@ -8,7 +8,7 @@ import tc.oc.pgm.kits.Kit;
 import tc.oc.pgm.points.PointProvider;
 
 public class Spawn implements FeatureDefinition {
-  protected final SpawnAttributes attributes;
+  public final SpawnAttributes attributes;
   protected final PointProvider pointProvider;
 
   public Spawn(SpawnAttributes attributes, PointProvider pointProvider) {
