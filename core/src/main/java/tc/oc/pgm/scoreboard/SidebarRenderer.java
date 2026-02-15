@@ -218,7 +218,10 @@ class SidebarRenderer {
   }
 
   private void renderFooter(RenderContext context) {
-    final Component footer = PGM.get().getConfiguration().getMatchFooter();
+    // Check for dynamic footer first, fall back to config footer
+    final Component dynamicFooter = smm.getDynamicFooter();
+    final Component footer =
+        dynamicFooter != null ? dynamicFooter : PGM.get().getConfiguration().getMatchFooter();
     if (footer != null) {
       // Only shows footer if there are one or two rows available
       if (context.size() < MAX_ROWS - 2) {

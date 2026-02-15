@@ -87,11 +87,32 @@ public class SidebarMatchModule implements MatchModule, Listener {
   private final Match match;
   private final SidebarRenderer renderer;
   private final Component title;
+  private @Nullable Component dynamicFooter; // Dynamic footer set by external plugins
 
   public SidebarMatchModule(Match match) {
     this.match = match;
     this.renderer = new SidebarRenderer(match, this);
     this.title = renderer.renderTitle();
+  }
+
+  /**
+   * Sets a dynamic footer component to display at the bottom of the sidebar. This overrides the
+   * config-based footer for this match.
+   *
+   * @param footer The footer component, or null to clear
+   */
+  public void setDynamicFooter(@Nullable Component footer) {
+    this.dynamicFooter = footer;
+    renderSidebarDebounce();
+  }
+
+  /**
+   * Gets the current dynamic footer component.
+   *
+   * @return The dynamic footer, or null if not set
+   */
+  public @Nullable Component getDynamicFooter() {
+    return this.dynamicFooter;
   }
 
   private FastBoard addSidebar(MatchPlayer player) {
